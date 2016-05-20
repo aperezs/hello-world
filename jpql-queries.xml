@@ -1,0 +1,1032 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+	version="1.0">
+
+	<!-- MediTcSentidoResolucion -->
+	<named-query name="MediTcSentidoResolucion.findAll">
+		<query>
+      SELECT o FROM MediTcSentidoResolucion o
+    </query>
+	</named-query>
+
+	<!-- MediTrProyectoResolucion -->
+	<named-query name="MediTrProyectoResolucion.findByMedioImpugnacion">
+		<query>
+      SELECT p FROM MediTrProyectoResolucion p WHERE p.medioImpugnacion.idMedioImpugnacion = :idMedioImpugnacion
+    </query>
+	</named-query>
+
+	<!-- MediTrAmpliacion -->
+	<named-query name="TrAmpliacion.findbyMedioImpugnacion">
+		<query>
+      SELECT s FROM MediTrAmpliacion s WHERE s.idMedioImpugnacion = :idMedioImpugnacion
+    </query>
+	</named-query>
+
+	<!-- MediTrProyectista -->
+	<named-query
+		name="MediTrProyectista.findProyectistasDisponiblesParaMedioImpugancion">
+		<query>
+      SELECT cp.mediTrProyectista 
+      FROM MediTrComisionadoProyec cp 
+      WHERE cp.mediTcEstatusActivo.idEstatusActivo = 1
+      AND cp.mediTrProyectista.mediTcEstatusActivo.idEstatusActivo = 1
+      AND cp.id.idComisionado IN (
+        SELECT tc.mediTrComisionado.userId
+        FROM MediTrTurnadoComisionado tc 
+        WHERE tc.mediTrTurnado.mediTrMedioImpugnacion.idMedioImpugnacion = :idMedioImpugnacion)
+    </query>
+	</named-query>
+	
+	<named-query
+		name="MediTrProyectista.findProyectistasNoAsignados">
+		<query>
+      SELECT a FROM MediTrProyectista a 
+      WHERE a.fkEstado= :idEntidad
+    </query>
+	</named-query>
+
+	<!-- MediTrDocumento -->
+	<named-query name="MediTrDocumento.findByTipoActividadAndActividad">
+		<query>
+      SELECT d 
+      FROM MediTrDocumento d 
+      WHERE d.tipoActividad.id = :idTipoActividad 
+      AND d.idActividad = :idActividad 
+      AND d.activo = true 
+      ORDER BY d.version ASC
+    </query>
+	</named-query>
+
+	<named-query name="MediTrDocumento.findByIds">
+		<query>
+      SELECT d 
+      FROM MediTrDocumento d 
+      WHERE d.idDocumento IN :documentIds
+      ORDER BY d.version ASC
+    </query>
+	</named-query>
+
+	<named-query name="MediTrDocumento.findByCampoAndActividad">
+		<query>
+      SELECT d 
+      FROM MediTrDocumento d 
+      WHERE d.tipoDocumento.id IN (
+        SELECT c.tipoDocumento.id 
+        FROM MediTcCampo c 
+        WHERE c.id = :idCampo) 
+      AND d.idActividad = :idActividad 
+      AND d.activo = true 
+      ORDER BY d.version ASC
+    </query>
+	</named-query>
+
+
+	<named-query name="MediTrDocumento.findByMedioImpugnacionAndCampoVista">
+		<query>
+      SELECT d 
+      FROM MediTrDocumento d
+      WHERE d.campoVista.id = :idCampoVista
+      AND d.idActividad = :idMedioImpugnacion
+      AND d.activo = true 
+      ORDER BY d.version ASC
+    </query>
+	</named-query>
+
+	<named-query
+		name="MediTrDocumento.findByCampoAndMedioImpugnacionAndControlActividad">
+		<query>
+      SELECT d 
+      FROM MediTrDocumento d 
+      WHERE d.tipoDocumento.id IN (
+        SELECT c.tipoDocumento.id 
+        FROM MediTcCampo c 
+        WHERE c.id = :idCampo) 
+      AND d.idActividad = :idActividad
+      AND d.controlActividad.idControlActividad = :idControlActividad
+      AND d.activo = true 
+      ORDER BY d.version ASC
+    </query>
+	</named-query>
+
+	<!-- MediVConfiguracionArchivo -->
+	<named-query name="MediVConfiguracionArchivo.findByEntidadAndTipoActividad">
+		<query>
+      SELECT c 
+      FROM MediVConfiguracionArchivo c 
+      WHERE c.idEntidad = :idEntidad 
+      AND c.idProceso IN (
+        SELECT t.idProceso 
+        FROM MediTcTipoActividad t 
+        WHERE t.id = :idTipoActividad)
+    </query>
+	</named-query>
+
+	<named-query
+		name="MediVConfiguracionArchivo.findGeneralConfigByTipoActividad">
+		<query>
+      SELECT c 
+      FROM MediVConfiguracionArchivo c 
+      WHERE c.idEntidad IS NULL
+      AND c.idProceso IN (
+        SELECT t.idProceso 
+        FROM MediTcTipoActividad t 
+        WHERE t.id = :idTipoActividad)
+    </query>
+	</named-query>
+
+	<named-query name="MediVConfiguracionArchivo.findByEntidadAndCampo">
+		<query>
+      SELECT c 
+      FROM MediVConfiguracionArchivo c 
+      WHERE c.idEntidad = :idEntidad 
+      AND c.idProceso IN (
+        SELECT ca.actividad.idProceso 
+        FROM MediTcCampo ca 
+        WHERE ca.id = :idCampo)
+    </query>
+	</named-query>
+
+	<named-query name="MediVConfiguracionArchivo.findGeneralConfigByCampo">
+		<query>
+      SELECT c 
+      FROM MediVConfiguracionArchivo c 
+      WHERE c.idEntidad IS NULL
+      AND c.idProceso IN (
+        SELECT ca.actividad.idProceso 
+        FROM MediTcCampo ca 
+        WHERE ca.id = :idCampo)
+    </query>
+	</named-query>
+
+	<!-- MediVProceso -->
+	<named-query name="MediVProceso.findBySistema">
+		<query>
+      SELECT p 
+      FROM MediVProceso p
+      WHERE p.idSistema = :idSistema
+    </query>
+	</named-query>
+
+	<named-query name="MediTrMedioImpugnacion.findByNumeroExpediente">
+		<query>
+	      SELECT mi 
+	      FROM MediTrMedioImpugnacion mi
+	      	INNER JOIN mi.mediTrTurnados mt 
+	      WHERE (SELECT ma.mediTrMedioImpugnacion.idMedioImpugnacion 
+	      		 FROM MediTrMedioAtraccion ma 
+	      		 WHERE ma.mediTrMedioImpugnacion.idMedioImpugnacion = mi.idMedioImpugnacion
+	      		 ) IS NULL
+	      	AND mt.numeroExpediente = :numeroExpediente
+	      	AND mi.mediTcTipoStatus.idStatus != 10
+    	</query>
+	</named-query>
+
+	<!-- Atraccion -->
+	<named-query name="MediTrMedioAtraccion.findByExample">
+		<query>
+      SELECT DISTINCT ma 
+      FROM MediTrMedioAtraccion ma
+      INNER JOIN ma.mediTrFormato f
+      INNER JOIN ma.mediTrMedioImpugnacion i
+      INNER JOIN i.mediTrTurnados t
+      INNER JOIN i.mediTrSolicitudInformacion s
+      INNER JOIN s.mediTcEntidadFederativa ent
+      INNER JOIN ma.mediTcStatusAtraccion sta
+      LEFT JOIN ma.mediTcTemaInteres ti
+	  LEFT JOIN ma.mediTcTemaTranscendencia tt
+	  INNER JOIN f.idTipoEntrada te
+	  LEFT JOIN f.idOrganoGarante og
+      LEFT JOIN s.mediTcSujetoObligado so
+      LEFT JOIN s.mediTrRecurrenteFm r
+      LEFT JOIN t.mediTrTurnadoComisionados tc
+      WHERE 1 = 1
+      AND ( :idAtraccion IS NULL OR ma.idAtraccion = :idAtraccion )
+      AND ( :expediente IS NULL OR LOWER(t.numeroExpediente) LIKE :expediente )
+      AND ( :fechaEnvioInicio IS NULL OR ma.fechaEnvio &gt;= :fechaEnvioInicio )
+      AND ( :fechaEnvioFin IS NULL OR ma.fechaEnvio &lt;= :fechaEnvioFin )
+      AND ( :idComisionado IS NULL OR tc.userId = :idComisionado )
+      AND ( :idEntidadFed IS NULL OR ent.idEntidadFederativa = :idEntidadFed )
+      AND ( :temaInteres IS NULL OR ti.idTemaInteres = :temaInteres )
+      AND ( :temaTrascendencia IS NULL OR tt.idTemaTranscendencia = :temaTrascendencia )
+      AND ( :idTipoEntrada IS NULL OR te.idEntrada = :idTipoEntrada )
+      AND ( :idSujetoObligado IS NULL OR so.idSujetoObligado = :idSujetoObligado )
+      AND ( sta.idStatus IN :idStatusAtraccion )
+      AND ( :nombreEmisor IS NULL 
+      	OR (f.correoOrganoGarante IS NULL
+      		AND (UPPER(r.nombrerazonsocial) LIKE UPPER(:nombreEmisor) 
+      			OR UPPER(r.primerApellido) LIKE UPPER(:nombreEmisor)
+      			OR UPPER(r.segundoApellido) LIKE UPPER(:nombreEmisor) 
+      			)
+      		)
+      	OR (f.correoOrganoGarante IS NOT NULL 
+      		AND UPPER(og.nombre) LIKE UPPER(:nombreEmisor) )
+      	)
+      AND ma.mediTrMedioImpugnacion.idMedioImpugnacion NOT IN ( 
+            SELECT cp.mediTrMedioImpugnacion.idMedioImpugnacion FROM MediTrControlProceso cp WHERE cp.estatusProceso.id = 2
+        )
+    </query>
+	</named-query>
+
+	<!-- MediTcActividad -->
+	<named-query name="MediTcActividad.findByProceso">
+		<query>
+      SELECT a 
+      FROM MediTcActividad a
+      WHERE a.idProceso = :idProceso
+    </query>
+	</named-query>
+
+	<named-query name="MediTcActividad.findActividadesByRolActEstatus">
+		<query>
+
+    SELECT actividad
+    FROM MediTcActividad actividad
+     WHERE actividad.id in (
+    	SELECT ac.actividadSiguiente.id 
+    	FROM MediTcAccion ac, MediTcActividad act, MediTcActividadRol ar, MediTrControlActividad ca
+    	WHERE 
+    	ca.mediTcActividad.id = act.id
+    	AND ac.actividadActual.id = act.id
+    	AND act.id = ar.id.idActividad
+    	AND ar.id.key = :keyRol
+    	AND ac.actividadActual.id = :idActividadActual
+    	AND ca.estatus = true
+    	AND ac.mediTcTipoStatus.idStatus = :idEstatus
+    )
+
+    </query>
+	</named-query>
+
+	<!-- MediTcAccion -->
+	<named-query name="MediTcAccion.findByRolAndActividadActualAndEstatus">
+		<query>
+        SELECT DISTINCT ac
+        FROM MediTcAccion ac, MediTcActividad act, MediTcActividadRol ar, MediTrControlActividad ca
+        WHERE ca.mediTcActividad.id = act.id
+        AND ac.actividadActual.id = act.id
+        AND act.id = ar.id.idActividad
+        AND ar.id.key = :keyRol
+        AND ac.actividadActual.id = :idActividadActual
+        AND ca.estatus = true
+        AND ac.mediTcTipoStatus.idStatus = :idEstatus
+        ORDER BY ac.iniciales ASC
+    </query>
+	</named-query>
+
+	<named-query name="MediTcAccion.findByRolAndEstatus">
+		<query>
+        SELECT DISTINCT ac
+        FROM MediTcAccion ac, MediTcActividad act, MediTcActividadRol ar, MediTrControlActividad ca
+        WHERE ca.mediTcActividad.id = act.id
+        AND ac.actividadActual.id = act.id
+        AND act.id = ar.id.idActividad
+        AND ar.id.key = :keyRol
+        AND ca.estatus = true
+        AND ac.mediTcTipoStatus.idStatus = :idEstatus
+        ORDER BY ac.iniciales ASC
+    </query>
+	</named-query>
+
+	<named-query
+		name="MediTcAccionCumplimiento.findByRolAndActividadActualAndEstatusCumplimiento">
+		<query>
+        SELECT DISTINCT ac
+        FROM MediTcAccionCumplimiento ac, MediTcActividad act, MediTcActividadRol ar, MediTrControlActividad ca
+        WHERE ca.mediTcActividad.id = act.id
+        AND ac.actividadActual.id = act.id
+        AND act.id = ar.id.idActividad
+        AND ar.id.key = :keyRol
+        AND ac.actividadActual.id = :idActividadActual
+        AND ca.estatus = true
+        AND ac.mediTcStatusCumplimiento.idStatusCumplimiento = :idEstatus
+        ORDER BY ac.iniciales ASC
+    </query>
+	</named-query>
+
+	<named-query
+		name="MediTcAccionCumplimiento.findByRolAndEstatusCumplimiento">
+		<query>
+        SELECT DISTINCT ac
+        FROM MediTcAccionCumplimiento ac, MediTcActividad act, MediTcActividadRol ar, MediTrControlActividad ca
+        WHERE ca.mediTcActividad.id = act.id
+        AND ac.actividadActual.id = act.id
+        AND act.id = ar.id.idActividad
+        AND ar.id.key = :keyRol
+        AND ca.estatus = true
+        AND ac.mediTcStatusCumplimiento.idStatusCumplimiento = :idEstatus
+        ORDER BY ac.iniciales ASC
+    </query>
+	</named-query>
+
+	<!-- MediTrControlActividad -->
+	<named-query name="MediTrControlActividad.getActiveByIdMedioImpugnacion">
+		<query>
+  		SELECT ca
+  		FROM MediTrControlActividad ca
+  		WHERE ca.controlProceso.mediTrMedioImpugnacion.idMedioImpugnacion = :idMedImp
+  		AND ca.estatus = true
+    </query>
+	</named-query>
+
+	<named-query
+		name="MediTrControlActividad.findControlActividadesMismoMedioAndActividad">
+		<query>
+      SELECT c 
+      FROM MediTrControlActividad c
+      WHERE c.controlProceso.mediTrMedioImpugnacion.idMedioImpugnacion IN (
+        SELECT ca.controlProceso.mediTrMedioImpugnacion.idMedioImpugnacion 
+        FROM MediTrControlActividad ca 
+        WHERE ca.idControlActividad = :idControlActividad)
+      AND c.mediTcActividad.id = :idActividad
+      AND c.estatus = true
+    </query>
+	</named-query>
+
+	<named-query
+		name="MediTrControlActividad.findControlActividadesActivasMismoProceso">
+		<query>
+      SELECT c 
+      FROM MediTrControlActividad c
+      WHERE c.controlProceso.id IN (
+        SELECT ca.controlProceso.id 
+        FROM MediTrControlActividad ca 
+        WHERE ca.idControlActividad = :idControlActividad)
+      AND c.estatus = true
+    </query>
+	</named-query>
+
+	<named-query
+		name="MediTrControlActividad.findControlActividadesMismoControlProcesoAndActividad">
+		<query>
+      SELECT c 
+      FROM MediTrControlActividad c
+      WHERE c.controlProceso.id IN (
+        SELECT ca.controlProceso.id 
+        FROM MediTrControlActividad ca 
+        WHERE ca.idControlActividad = :idControlActividad)
+      AND c.mediTcActividad.id = :idActividad
+      AND c.estatus = true
+    </query>
+	</named-query>
+
+	<named-query name="MediTrControlActividad.findByControlProcesoAndActividad">
+		<query>
+      SELECT c 
+      FROM MediTrControlActividad c
+      WHERE c.controlProceso.id = :idControlProceso
+      AND c.mediTcActividad.id = :idActividad
+      AND c.estatus = true
+    </query>
+	</named-query>
+
+	<!-- MediTcCampo -->
+	<named-query name="MediTcCampo.findByActividad">
+		<query>
+      SELECT c 
+      FROM MediTcCampo c
+      WHERE c.actividad.id = :idActividad
+      AND c.mostradoEnExpediente = true
+    </query>
+	</named-query>
+
+	<!-- MediTrVistaExpediente -->
+	<named-query name="MediTrVistaExpediente.findAllActive">
+		<query>
+      SELECT v 
+      FROM MediTrVistaExpediente v
+      WHERE v.activo = true
+    </query>
+	</named-query>
+
+	<!-- MediTrVistaXRol -->
+	<named-query name="MediTrVistaXRol.findByVista">
+		<query>
+      SELECT x 
+      FROM MediTrVistaXRol x
+      WHERE x.vistaExpediente.id = :idVista
+      AND x.vistaExpediente.activo = true
+    </query>
+	</named-query>
+
+	<named-query name="MediTrVistaXRol.findByRol">
+		<query>
+      SELECT x 
+      FROM MediTrVistaXRol x
+      WHERE x.idRol = :keyRol
+      AND x.vistaExpediente.activo = true
+    </query>
+	</named-query>
+
+	<!-- MediTrHistMedioImpugna -->
+	<named-query name="MediTrHistMedioImpugna.findHistoricosCronologicos">
+		<query>
+      SELECT h 
+      FROM MediTrHistMedioImpugna h
+      WHERE h.medioImpugnacion.idMedioImpugnacion = :idMedioImpugnacion
+      ORDER BY h.fechaFinReal DESC
+    </query>
+	</named-query>
+
+	<named-query
+		name="MediTrHistMedioImpugna.findHistoricosCronologicosByProcesoDeActividad">
+		<query>
+      SELECT h 
+      FROM MediTrHistMedioImpugna h
+      WHERE h.medioImpugnacion.idMedioImpugnacion = :idMedioImpugnacion
+      AND h.actividad.idProceso IN (
+        SELECT a.idProceso 
+        FROM MediTcActividad a 
+        WHERE a.id = :idActividad)
+      ORDER BY h.fechaFinReal DESC
+    </query>
+	</named-query>
+
+	<!-- MediTrTelefonoRecurrente -->
+	<named-query name="MediTrTelefonoRecurrente.findByRecurrenteAndTipo">
+		<query>
+      SELECT t 
+      FROM MediTrTelefonoRecurrente t 
+      WHERE t.mediTrRecurrenteFm.idRecurrente = :idRecurrente 
+      AND t.mediTcTipoTelefono.idTipoTelefono = :idTipoTelefono
+    </query>
+	</named-query>
+
+	<!-- MediTrCampoVista -->
+	<named-query name="MediTrCampoVista.findActiveByVista">
+		<query>
+      SELECT c 
+      FROM MediTrCampoVista c 
+      WHERE c.vistaExpediente.id = :idVista
+      AND c.activo = true
+    </query>
+	</named-query>
+
+	<named-query name="MediTrCampoVista.findByRol">
+		<query>
+      SELECT c 
+      FROM MediTrCampoVista c 
+      WHERE c.vistaExpediente.id IN (
+        SELECT x.vistaExpediente.id
+        FROM MediTrVistaXRol x
+        WHERE x.idRol = :keyRol)
+      AND c.activo = true
+    </query>
+	</named-query>
+
+	<!-- MediTrNotificacion -->
+	<named-query
+		name="MediTrNotificacion.findByMedioImpugnacionAndTipoNotificacion">
+		<query>
+     
+     SELECT no FROM MediTrNotificacion no WHERE no.medioImpugnacion.idMedioImpugnacion = :idMedioImpugnacion 
+     AND no.idTipoNotificacion= :idTipoNotificacion ORDER BY no.fechaGeneracion ASC
+    </query>
+	</named-query>
+
+	<named-query name="MediTrAsistenteSesionPleno.findBySesionPleno">
+		<query>
+      SELECT p FROM MediTrAsistenteSesionPleno p WHERE p.sesionPleno.idSesionPleno = :idSesionPleno
+    </query>
+	</named-query>
+
+	<named-query name="MediTrAsistenteSesionPleno.findByMedioImpugnacion">
+		<query>
+      SELECT q 
+      FROM MediTrSesionPleno p, MediTrAsistenteSesionPleno q 
+      WHERE 
+      	p.idSesionPleno = q.sesionPleno.idSesionPleno
+      	AND p.medioImpugnacion.idMedioImpugnacion = :idMedioImpugnacion
+		AND P.idTipoSesionPleno = :idTipoSesionPleno
+    </query>
+	</named-query>
+
+	<named-query name="MediTrSesionPleno.findByMedioImpugnacion">
+		<query>
+      SELECT p 
+      FROM MediTrSesionPleno p 
+      WHERE 
+      	p.medioImpugnacion.idMedioImpugnacion = :idMedioImpugnacion
+      <!-- 		AND P.idTipoSesionPleno = :idTipoSesionPleno -->
+    </query>
+	</named-query>
+
+	<named-query name="MediTrAsistenteAmpliacion.findBySesionPleno">
+		<query>
+      SELECT p 
+      FROM MediTrAsistenteAmpliacion p 
+      WHERE 
+      	p.sesionPleno.idSesionPleno = :idSesionPleno
+    </query>
+	</named-query>
+	<named-query name="MediTrAsistenteAmpliacion.findByMedioImpugnacion">
+		<query>
+      SELECT q 
+      FROM MediTrAsistenteAmpliacion q 
+      INNER JOIN q.sesionPleno p 
+      INNER JOIN p.medioImpugnacion m
+      WHERE m.idMedioImpugnacion = :idMedioImpugnacion
+      <!-- 		AND P.idTipoSesionPleno = :idTipoSesionPleno -->
+    </query>
+	</named-query>
+
+	<named-query
+		name="MediTcCalendarioAsueto.findDiasAsuetosPorIdCalendarioAnio">
+		<query>
+  		SELECT cas.diaAsueto
+  		FROM MediTcCalendarioAsueto AS cas
+  		INNER JOIN cas.calendarioMes AS cm
+  		INNER JOIN cm.calendarioAnio AS ca
+  		WHERE ca.calendario.idCalendario = :idCalendario
+  		AND ca.anio = :anio
+  		ORDER BY cas.diaAsueto ASC
+    </query>
+	</named-query>
+
+	<named-query name="MediTcCalendarioAsueto.findCalendariosByParameters">
+		<query>
+      SELECT DISTINCT c 
+      FROM MediTcCalendario c
+      LEFT JOIN c.entidadFederativa e
+      LEFT JOIN c.alcances ca
+      LEFT JOIN ca.sujetoObligado so
+      WHERE ( :nombre IS NULL OR UPPER(c.nombre) LIKE UPPER(:nombre) )
+      AND ( :descripcion IS NULL OR UPPER(c.descripcion) LIKE UPPER(:descripcion) )
+      AND ( :fechaInicio IS NULL OR c.vigencia BETWEEN :fechaInicio AND :fechaFin )
+      AND ( :alcance  IS NULL OR ( :alcance = 1 AND c.alcance = :alcance ) )
+      AND ( :idEntidadFederativa IS NULL OR (:alcance = 0 AND e.idEntidadFederativa = :idEntidadFederativa ) )
+      AND ( :roleId IS NULL OR c.roleId = :roleId )
+      AND ( :sujetoObligado IS NULL OR UPPER(so.sujetoObligado) LIKE UPPER(:sujetoObligado))
+      AND ( c.activo = 1 )
+      ORDER BY c.nombre, c.idCalendario
+    </query>
+	</named-query>
+
+	<named-query name="MediTcCalendarioAsueto.findCalendariosBySujetoObligado">
+		<query>
+			SELECT DISTINCT c
+			FROM MediTcCalendario c
+				JOIN c.entidadFederativa e
+				JOIN c.alcances ca
+				JOIN ca.sujetoObligado so
+			WHERE (:sujetoObligado IS NULL OR so.idSujetoObligado = :sujetoObligado)
+				AND c.vigente = 1
+				AND c.activo = 1
+			ORDER BY c.nombre, c.idCalendario
+		</query>
+	</named-query>
+
+	<named-query name="MediTcCalendarioAsueto.countCalendariosByParameters">
+		<query>
+      SELECT COUNT(DISTINCT c) 
+      FROM MediTcCalendario c
+      LEFT JOIN c.entidadFederativa e
+      LEFT JOIN c.alcances ca
+      LEFT JOIN ca.sujetoObligado so
+      WHERE ( :nombre IS NULL OR UPPER(c.nombre) LIKE UPPER(:nombre) )
+      AND ( :descripcion IS NULL OR UPPER(c.descripcion) LIKE UPPER(:descripcion) )
+      AND ( :fechaInicio IS NULL OR c.vigencia BETWEEN :fechaInicio AND :fechaFin )
+      AND ( :alcance  IS NULL OR ( :alcance = 1 AND c.alcance = :alcance ) )
+      AND ( :idEntidadFederativa IS NULL OR (:alcance = 0 AND e.idEntidadFederativa = :idEntidadFederativa ) )
+      AND ( :roleId IS NULL OR c.roleId = :roleId )
+      AND ( :sujetoObligado IS NULL OR UPPER(so.sujetoObligado) LIKE UPPER(:sujetoObligado))
+      AND ( c.activo = 1 )
+    </query>
+	</named-query>
+
+	<named-query name="MediTrMedioImpugnacion.findByExample">
+		<query>
+      SELECT DISTINCT m 
+      FROM MediTrMedioImpugnacion m
+      INNER JOIN m.mediTrSolicitudInformacion s
+      INNER JOIN m.mediTrTurnados t 
+      INNER JOIN t.mediTrTurnadoComisionados tc
+      WHERE 1 = 1
+      AND ( :expediente IS NULL OR LOWER(t.numeroExpediente) LIKE :expediente )
+      AND ( :idComisionado IS NULL OR tc.mediTrComisionado.userId = :idComisionado )
+      AND ( :sujetoObligado IS NULL OR s.mediTcSujetoObligado.idSujetoObligado IN (
+        SELECT so.idSujetoObligado
+        FROM MediTcSujetoObligado so
+        WHERE LOWER(so.sujetoObligado) LIKE :sujetoObligado
+        OR LOWER(so.siglas) LIKE :sujetoObligado )
+      )
+      AND ( :fechaInterposicionInicio IS NULL OR m.fechahoraInterposicion >= :fechaInterposicionInicio )
+      AND ( :fechaInterposicionFin IS NULL OR :fechaInterposicionFin >= m.fechahoraInterposicion )
+      AND ( :fechaResolucionInicio IS NULL OR m.idMedioImpugnacion IN (
+        SELECT sp.medioImpugnacion.idMedioImpugnacion
+        FROM MediTrSesionPleno sp
+        WHERE sp.fechaVotacionPleno >= :fechaResolucionInicio )
+      )
+      AND ( :fechaResolucionFin IS NULL OR m.idMedioImpugnacion IN (
+        SELECT sp2.medioImpugnacion.idMedioImpugnacion
+        FROM MediTrSesionPleno sp2
+        WHERE :fechaResolucionFin >= sp2.fechaVotacionPleno ) 
+      ) 
+    </query>
+	</named-query>
+
+	<named-query name="MediTrAcuse.findAllByIdMedioImpugnacion">
+		<query>
+  		SELECT a
+  		FROM MediTrAcuse AS a
+  		INNER JOIN a.turnado AS t
+  		WHERE t.idMedioImpugnacion = :idMedioImpugnacion
+    </query>
+	</named-query>
+
+	<named-query name="MediTrDocumento.deleteTemporales">
+		<query>
+  		DELETE FROM MediTrDocumento dt 
+  		WHERE dt.tipoActividad.id= :idTipoActividad
+  		AND dt.idActividad =:idActividad
+    </query>
+	</named-query>
+
+	<named-query name="MediTrDocumento.asignarIdActividad">
+		<query>
+  		UPDATE MediTrDocumento td 
+  		SET td.idActividad = :idActividad  
+  		WHERE td.tipoActividad.id= :idTipoActividad
+    </query>
+	</named-query>
+
+	<named-query name="MediTrMedioImpugnacion.findToAcumulate">
+		<query>
+  		SELECT mi 
+  		FROM MediTrMedioImpugnacion mi
+		WHERE mi.mediTcTipoStatus.idStatus NOT IN (5,6,7,18)
+		AND mi.idMedioImpugnacion &lt;&gt; :idMedioImpugnacion
+		AND mi.mediTrSolicitudInformacion.mediTcSujetoObligado.idSujetoObligado = :idSujetoOb
+		AND (mi.candidatoAcumulador IS NULL OR mi.candidatoAcumulador = FALSE)
+		AND mi.fechahoraInterposicion &lt; :fechaImposicion
+    </query>
+	</named-query>
+
+	<named-query name="MediTrMedioImpugnacion.findToAcumulation">
+		<query>
+  		SELECT mi 
+  		FROM MediTrMedioImpugnacion mi
+		WHERE mi.mediTcTipoStatus.idStatus NOT IN (5,6,7,18)
+		AND mi.idMedioImpugnacion &lt;&gt; :idMedioImpugnacion
+		AND (mi.candidatoAcumulador IS NULL OR mi.candidatoAcumulador = FALSE)
+    </query>
+	</named-query>
+
+	<named-query name="MediTrAcumulacion.getByPatternId">
+		<query>
+  		SELECT ma
+  		FROM MediTrAcumulacion ma
+  		INNER JOIN ma.mediTrMedioImpugAcumulados mia
+  		WHERE ma.mediTrMedioImpugnacion.idMedioImpugnacion = :idMedImp 
+  		AND ma.fechahoraBaja IS NULL
+  		AND mia.fechahoraBaja IS NULL
+    </query>
+	</named-query>
+
+	<named-query name="MediTrMedioImpugAcumulado.findByIdMedImpPattern">
+		<query>
+  		SELECT mia
+  		FROM MediTrMedioImpugAcumulado mia
+  		WHERE mia.mediTrMedioImpugnacion.idMedioImpugnacion = :idMedImpug
+  		AND mia.fechahoraBaja IS NULL
+    </query>
+	</named-query>
+
+	<named-query name="MediTrMedioImpugAcumulado.findByIdAcumulacion">
+		<query>
+  		SELECT mia
+  		FROM MediTrMedioImpugAcumulado mia
+  		WHERE mia.mediTrAcumulacion.idAcumulacion = :idAcumulacion
+  		AND mia.fechahoraBaja IS NULL
+    </query>
+	</named-query>
+
+	<named-query name="MediTrComisionadoProyec.getByIdProyec">
+		<query>
+  		SELECT cp
+  		FROM MediTrComisionadoProyec cp
+  		WHERE cp.id.idProyectista = :idProyectista
+  		AND cp.mediTcEstatusActivo.estatusActivo = 'Activo'
+  		AND cp.mediTrProyectista.mediTcEstatusActivo.estatusActivo = 'Activo'
+    </query>
+	</named-query>
+
+	<named-query name="MediTcTipoStatus.findToReconduccion">
+		<query>
+  		SELECT ts
+  		FROM MediTcTipoStatus ts
+  		WHERE ts.idStatus &gt; 1 AND ts.idStatus &lt; 10
+    </query>
+	</named-query>
+	
+	<named-query name="MediTcTipoStatus.findAll">
+		<query>
+  		SELECT ts
+  		FROM MediTcTipoStatus ts
+    </query>
+	</named-query>
+
+	<named-query name="MediTrMedioImpugnacion.findToReconduccion">
+		<query>
+  		SELECT o
+  		FROM MediTrMedioImpugnacion o
+  		INNER JOIN o.mediTrTurnados t 
+      	INNER JOIN t.mediTrTurnadoComisionados tc
+  		WHERE o.mediTcTipoStatus.idStatus IN (2,3,4,5,6,7,8,9)
+  		AND ( :idComisionado IS NULL OR tc.mediTrComisionado.userId = :idComisionado )
+  		AND ( :idStatus IS NULL OR o.mediTcTipoStatus.idStatus = :idStatus)
+  		AND ( :numExp IS NULL OR LOWER(t.numeroExpediente) LIKE :numExp )
+  		AND ( :fechaStatusIni IS NULL OR o.fechaStatus &gt;= :fechaStatusIni )
+  		AND ( :fechaStatusFin IS NULL OR o.fechaStatus &lt;= :fechaStatusFin )
+  		ORDER BY o.fechaOrdenamiento ASC, o.idMedioImpugnacion ASC
+    </query>
+	</named-query>
+
+	<named-query name="MediTrBitacora.findByConsulta">
+		<query>
+  		SELECT b
+  		FROM MediTrBitacora b
+  		INNER JOIN b.medioImpugnacion.mediTrTurnados t
+  		WHERE 1 = 1
+  		AND ( :idActividad IS NULL OR b.actividad.id = :idActividad )
+  		AND ( :idEvento IS NULL OR b.evento.id = :idEvento )
+  		AND ( :numExp IS NULL OR LOWER( t.numeroExpediente ) LIKE :numExp  )
+  		AND ( :fechaIni IS NULL OR b.fechaActividad &gt;= :fechaIni )
+  		AND ( :fechaFin IS NULL OR b.fechaActividad &lt;= :fechaFin )
+  		ORDER BY b.fechaActividad ASC
+    </query>
+	</named-query>
+	<named-query name="MediTrRecurrenteFm.getByMedioImpugnacion">
+		<query>
+		SELECT c 
+		FROM MediTrMedioImpugnacion a, MediTrSolicitudInformacion b, MediTrRecurrenteFm c 
+		WHERE 
+			a.idMedioImpugnacion = :idMedioImpugnacion 
+			AND a.mediTrSolicitudInformacion.idSolicitud = b.idSolicitud 
+			AND b.mediTrRecurrenteFm.idRecurrente = c.idRecurrente
+    </query>
+	</named-query>
+
+	<named-query name="MediTrPlantillaOrdenDia.findAllByNombre">
+		<query>
+		SELECT c 
+		FROM MediTrPlantillaOrdenDia c 
+		WHERE 
+			c.nombre like :nombre 
+    </query>
+	</named-query>
+	<named-query name="MediTrPlantillaOrdenDia.updateAllVigente">
+		<query>
+		UPDATE MediTrPlantillaOrdenDia c
+		SET c.vigente = :vigente
+    </query>
+	</named-query>
+	<named-query name="MediTrPlantillaOrdenDia.updateVigenteByIdPlantilla">
+		<query>
+		UPDATE MediTrPlantillaOrdenDia c
+		SET c.vigente = :vigente
+		WHERE
+			c.idPlantilla = :idPlantilla
+    </query>
+	</named-query>
+
+	<named-query name="MediTrPlantillaODDetalle.findAllByIdPlantilla">
+		<query>
+		SELECT c 
+		FROM MediTrPlantillaODDetalle c 
+		WHERE 
+			c.idPlantilla = :idPlantilla 
+    </query>
+	</named-query>
+	<named-query name="MediTcTipoInconformidad.findAllActives">
+		<query>
+  		SELECT m 
+  		FROM MediTcTipoInconformidad m
+  		WHERE m.fechaHoraBaja IS NULL
+  		ORDER BY m.idTipoInconformidad
+    </query>
+	</named-query>
+	<named-query name="MediTcFormaRequerimiento.findAllActives">
+		<query>
+  		SELECT m 
+  		FROM MediTcFormaRequerimiento m
+  		WHERE m.fechaHoraBaja IS NULL
+  		ORDER BY m.idFormaRequerimiento
+    </query>
+	</named-query>
+	<named-query name="MediTrInconfCumplimiento.getByIdMedImp">
+		<query>
+  		SELECT ic
+  		FROM MediTrInconfCumplimiento ic
+  		WHERE ic.mediTrMedioImpugnacion.idMedioImpugnacion = :idMedImp
+  		AND ic.mediTcStatusCumplimiento.idStatusCumplimiento NOT IN (3,5)
+    </query>
+	</named-query>
+	<named-query name="MediTrInconfCumplimiento.getByIdMedImpOtherStates">
+		<query>
+  		SELECT ic
+  		FROM MediTrInconfCumplimiento ic
+  		LEFT JOIN ic.mediTcStatusCumplimiento sc 
+  		WHERE ic.mediTrMedioImpugnacion.idMedioImpugnacion = :idMedImp
+    </query>
+	</named-query>
+	<named-query name="MediTrEstFinIncCump.getByIdMedImp">
+		<query>
+	  	SELECT ef
+	  	FROM MediTrEstFinIncCump ef
+	  	WHERE ef.mediTrInconfCumplimiento.mediTrMedioImpugnacion.idMedioImpugnacion = :idMedImp
+	  	AND ef.mediTrInconfCumplimiento.mediTcStatusCumplimiento.idStatusCumplimiento = 3
+	  	AND ef.fechaHrBaja IS NULL
+    </query>
+	</named-query>
+
+	<!-- MediTrComisionado -->
+	<named-query
+		name="MediTrComisionado.findComisionadoTurnadoParaMedioImpugancion">
+		<query>
+      SELECT c
+      FROM MediTrTurnado a , MediTrTurnadoComisionado b , MediTrComisionado c
+      WHERE a.idMedioImpugnacion = :idMedioImpugnacion
+          and a.idTurnado = b.idTurnado
+          and b.userId =  c.userId
+    </query>
+	</named-query>
+	<!-- MediTrTercerInteresado -->
+	<named-query
+		name="MediTrTercerInteresado.findtercerosinetersadosporMedioImpugancion">
+		<query>
+      SELECT a FROM MediTrTercerInteresado a WHERE a.medioImpugnacion = :idMedioImpugnacion
+    </query>
+	</named-query>
+
+	<named-query name="MediTrAtenderReq.findByIdMedImp">
+		<query>
+			SELECT at 
+			FROM MediTrAtenRequIncCum at
+			WHERE at.mediTrInconfCumplimiento.mediTrMedioImpugnacion.idMedioImpugnacion = :idMedImp
+    </query>
+	</named-query>
+	<named-query name="MediVSector.findActives">
+		<query>
+			SELECT vs
+			FROM MediVSector vs
+			WHERE vs.activo = 1
+    </query>
+	</named-query>
+	<named-query name="MediTcSujetoObligado.findBySector">
+		<query>
+			SELECT so
+			FROM MediTcSujetoObligado so
+			WHERE so.idSector = :idSector
+    </query>
+	</named-query>
+
+	<named-query name="MediTrAudiencia.findaudienciaporMedioImpugancion">
+		<query>
+      		SELECT a FROM MediTrAudiencia a WHERE a.idMedioImpugnacion = :idMedioImpugnacion
+    </query>
+	</named-query>
+	<named-query
+		name="MediTrControlActividad.obtenerIdActividadEnvioInformacion">
+		<query>  
+    SELECT A
+     FROM MediTrControlActividad A 
+     where A.controlProceso.id = :idControlProceso 
+     AND A.mediTcActividad.id = :idActividad
+  </query>
+	</named-query>
+
+	<named-query name="MediTrFormatoCorreo.findAll">
+		<query>  
+	    SELECT f
+	     FROM MediTrFormato f 
+  	</query>
+	</named-query>
+
+
+	<!-- MediTrEvaluaCumplimiento -->
+
+	<named-query name="MediTrEvaluaCumplimiento.findByAutoComplete">
+		<query>  
+	    SELECT DISTINCT m
+	     FROM MediTrEvaluaCumplimiento m 
+	     WHERE LOWER(m.dsSiglasResponsable) LIKE LOWER(:responsable) OR LOWER(m.dsResponsableInterior) LIKE LOWER(:responsable) 
+  	</query>
+	</named-query>
+
+	<named-query name="MediTrControlProceso.findByFiltersControlProceso">
+		<query>
+    SELECT 
+    new mx.org.inai.mediosimpugnacion.model.to.ProcesoTO(
+    mi.idMedioImpugnacion, m.idProceso, ep.id, c.nombre, c.primerApellido, c.segundoApellido, 
+    ts.idStatus, sccu.idStatusCumplimiento, sa.idStatus, t.numeroExpediente, MAX(mi.fechaStatus))
+    FROM MediTrControlProceso m
+    LEFT JOIN m.estatusProceso ep
+	LEFT JOIN m.mediTrMedioImpugnacion mi
+	LEFT JOIN mi.mediTrTurnados t
+	LEFT JOIN t.mediTrTurnadoComisionados tc
+	LEFT JOIN tc.mediTrComisionado c
+	LEFT JOIN mi.mediTcTipoStatus ts
+	LEFT JOIN mi.mediTrMedioAtracciones ma
+	LEFT JOIN ma.mediTcStatusAtraccion sa
+	LEFT JOIN mi.mediTrCumplimientos cu
+	LEFT JOIN cu.mediTcStatusCumplimiento sccu
+	LEFT JOIN mi.mediTrInconfCumplimientos ic
+	LEFT JOIN ic.mediTcStatusCumplimiento sc
+	WHERE ( :idProceso IS NULL OR m.idProceso = :idProceso )
+	AND ( :fechaStatusInicio IS NULL OR mi.fechaStatus &gt;= :fechaStatusInicio )
+	AND ( :fechaStatusFin IS NULL OR mi.fechaStatus &lt;= :fechaStatusFin )
+	AND ( :userId IS NULL OR c.userId = :userId )
+	AND ( :numeroExpediente IS NULL OR t.numeroExpediente LIKE :numeroExpediente )
+	AND ( :idStatus IS NULL OR ts.idStatus = :idStatus )
+	AND ( :idStatusCumplimiento IS NULL OR (sc.idStatusCumplimiento = :idStatusCumplimiento OR sccu.idStatusCumplimiento = :idStatusCumplimiento) )
+	AND ( :idStatusAtraccion IS NULL OR sa.idStatus = :idStatusAtraccion )
+	AND ep.id = :idStatusProceso
+	GROUP BY mi.idMedioImpugnacion, m.idProceso, ep.id, c.nombre, c.primerApellido, c.segundoApellido, 
+    ts.idStatus, sccu.idStatusCumplimiento, sa.idStatus, t.numeroExpediente
+	ORDER BY MAX(mi.fechaStatus) DESC
+    </query>
+	</named-query>
+
+	<named-query name="MediTrControlProceso.countByFiltersControlProceso">
+		<query>
+    SELECT 
+    new mx.org.inai.mediosimpugnacion.model.to.ProcesoTO(
+    mi.idMedioImpugnacion, m.idProceso, ep.id, c.nombre, c.primerApellido, c.segundoApellido, 
+    ts.idStatus, sccu.idStatusCumplimiento, sa.idStatus, t.numeroExpediente, MAX(mi.fechaStatus))
+    FROM MediTrControlProceso m
+    LEFT JOIN m.estatusProceso ep
+	LEFT JOIN m.mediTrMedioImpugnacion mi
+	LEFT JOIN mi.mediTrTurnados t
+	LEFT JOIN t.mediTrTurnadoComisionados tc
+	LEFT JOIN tc.mediTrComisionado c
+	LEFT JOIN mi.mediTcTipoStatus ts
+	LEFT JOIN mi.mediTrMedioAtracciones ma
+	LEFT JOIN ma.mediTcStatusAtraccion sa
+	LEFT JOIN mi.mediTrCumplimientos cu
+	LEFT JOIN cu.mediTcStatusCumplimiento sccu
+	LEFT JOIN mi.mediTrInconfCumplimientos ic
+	LEFT JOIN ic.mediTcStatusCumplimiento sc
+	WHERE ( :idProceso IS NULL OR m.idProceso = :idProceso )
+	AND ( :fechaStatusInicio IS NULL OR mi.fechaStatus &gt;= :fechaStatusInicio )
+	AND ( :fechaStatusFin IS NULL OR mi.fechaStatus &lt;= :fechaStatusFin )
+	AND ( :userId IS NULL OR c.userId = :userId )
+	AND ( :numeroExpediente IS NULL OR t.numeroExpediente LIKE :numeroExpediente )
+	AND ( :idStatus IS NULL OR ts.idStatus = :idStatus )
+	AND ( :idStatusCumplimiento IS NULL OR (sc.idStatusCumplimiento = :idStatusCumplimiento OR sccu.idStatusCumplimiento = :idStatusCumplimiento) )
+	AND ( :idStatusAtraccion IS NULL OR sa.idStatus = :idStatusAtraccion )
+	AND ep.id = :idStatusProceso
+	GROUP BY mi.idMedioImpugnacion, m.idProceso, ep.id, c.nombre, c.primerApellido, c.segundoApellido, 
+    ts.idStatus, sccu.idStatusCumplimiento, sa.idStatus, t.numeroExpediente
+	ORDER BY MAX(mi.fechaStatus) DESC
+    </query>
+	</named-query>
+
+	<named-query name="MediTrControlProceso.findAllByFilters">
+		<query>
+    SELECT m
+    FROM MediTrControlProceso m
+    LEFT JOIN m.estatusProceso ep
+	LEFT JOIN m.mediTrMedioImpugnacion mi
+	WHERE ( :idProceso IS NULL OR m.idProceso = :idProceso )
+	AND ( :idMedioImpugnacion IS NULL OR mi.idMedioImpugnacion = :idMedioImpugnacion )
+	AND ( :idStatusProceso IS NULL OR ep.id = :idStatusProceso )
+	ORDER BY m.id ASC
+    </query>
+	</named-query>
+
+	<!-- MediVOrganoGarante.findByCodigo -->
+
+	<named-query name="MediVOrganoGarante.findByCodigo">
+		<query>  
+	    SELECT DISTINCT m
+	     FROM MediVOrganoGarante m 
+	     WHERE  m.idOrganoGarante = :codigo
+  	</query>
+	</named-query>
+
+	<named-query name="MediTrSesionPlenoOrdDia.getLastSesionPleno">
+		<query>  
+	    SELECT m FROM MediTrSesionPlenoOrdDia m
+		WHERE m.fechaSesion >= :fechaActual
+		ORDER BY m.fechaSesion
+  	</query>
+	</named-query>
+	<named-query name="MediTrProyectista.findPkUserSystem">
+		<query>
+  SELECT m FROM MediTrProyectista m
+  WHERE m.pkUsrSistema = :pkUsrSistema
+  </query>
+  </named-query>
+  
+  <named-query name="MediTrRequerimentoAlcanc.findByALLFilters">
+  	<query>
+  	SELECT m FROM MediTrRequerimentoAlcanc m
+  	WHERE ( :idMedioImpugnacion IS NULL OR m.mediTrMedioImpugnacion.idMedioImpugnacion = :idMedioImpugnacion )
+  	AND ( :idTipoRequerimiento IS NULL OR m.idTipoReuerimento = :idTipoRequerimiento )
+  	</query>
+  </named-query>
+      
+</entity-mappings>
