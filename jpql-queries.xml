@@ -4,13 +4,6 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
 	version="1.0">
 
-	<!-- MediTcSentidoResolucion -->
-	<named-query name="MediTcSentidoResolucion.findAll">
-		<query>
-      SELECT o FROM MediTcSentidoResolucion o
-    </query>
-	</named-query>
-
 	<!-- MediTrProyectoResolucion -->
 	<named-query name="MediTrProyectoResolucion.findByMedioImpugnacion">
 		<query>
@@ -65,6 +58,7 @@
       SELECT d 
       FROM MediTrDocumento d 
       WHERE d.idDocumento IN :documentIds
+      and bla bla bla
       ORDER BY d.version ASC
     </query>
 	</named-query>
@@ -153,11 +147,12 @@
 		<query>
       SELECT c 
       FROM MediVConfiguracionArchivo c 
-      WHERE c.idEntidad IS NULL
-      AND c.idProceso IN (
+      WHERE c.idProceso IN (
         SELECT ca.actividad.idProceso 
         FROM MediTcCampo ca 
         WHERE ca.id = :idCampo)
+      AND 
+      c.idEntidad IS NULL
     </query>
 	</named-query>
 
@@ -312,8 +307,6 @@
         SELECT DISTINCT ac
         FROM MediTcAccionCumplimiento ac, MediTcActividad act, MediTcActividadRol ar, MediTrControlActividad ca
         WHERE ca.mediTcActividad.id = act.id
-        AND ac.actividadActual.id = act.id
-        AND act.id = ar.id.idActividad
         AND ar.id.key = :keyRol
         AND ca.estatus = true
         AND ac.mediTcStatusCumplimiento.idStatusCumplimiento = :idEstatus
@@ -369,6 +362,15 @@
         WHERE ca.idControlActividad = :idControlActividad)
       AND c.mediTcActividad.id = :idActividad
       AND c.estatus = true
+    </query>
+	</named-query>
+	
+	<named-query name="entity.namedquery">
+		<query>
+      SELECT c 
+      FROM ExampleEntity e
+      WHERE e.column =: something
+      AND e.anotherColumn =: somethingElse
     </query>
 	</named-query>
 
